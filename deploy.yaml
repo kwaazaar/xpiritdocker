@@ -1,0 +1,106 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name:  html
+  namespace: development
+  labels:
+    name:  html
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  html
+    spec:
+      containers:
+      - image:  kwaazaar/html:latest
+        name:  html
+        ports:
+        - containerPort:  80
+          name:  mainport
+      restartPolicy: Always
+      #imagePullPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name:  html
+  namespace: development
+spec:
+  selector:
+    app:  html
+  ports:
+    - port: 80
+      targetPort: mainport
+      name: html
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name:  api
+  namespace: development
+  labels:
+    name:  api
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  api
+    spec:
+      containers:
+      - image:  kwaazaar/api:latest
+        name:  api
+        ports:
+        - containerPort:  80
+          name:  mainport
+      restartPolicy: Always
+      #imagePullPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name:  api
+  namespace: development
+spec:
+  selector:
+    app:  api
+  ports:
+    - port: 80
+      targetPort: mainport
+      name: api
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: proxy-ingress
+  namespace: development
+  annotations:
+    ingress.kubernetes.io/rewrite-target: /
+spec:
+  tls:
+  - hosts:
+    - cursus.dev.aahg.ot
+    secretName: dev-ssl
+  rules:
+  - host: cursus.dev.aahg.ot
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: html
+          servicePort: html
+      - path: /api
+        backend:
+          serviceName: api
+          servicePort: api
