@@ -1,0 +1,4 @@
+FROM nginx:latest
+RUN apt update
+RUN apt install -y curl
+RUN curl https://gist.githubusercontent.com/riezebosch/b2a06e9398a456e390839a4f251ee82f/raw/b0ac0a293d0827e4ebf0bcf01361b3bc686a977f/index.html -o /usr/share/nginx/html/index.html

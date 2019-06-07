@@ -1,0 +1,4 @@
+FROM nginx:latest
+RUN apt update
+RUN apt install -y curl
+RUN curl https://gist.githubusercontent.com/riezebosch/b2a06e9398a456e390839a4f251ee82f/raw/95aebf446457aa31039826eaf1bc3b34e7936919/nginx.conf -o /etc/nginx/nginx.conf
